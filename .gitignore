@@ -1,0 +1,10 @@
+# Environments
+.env
+.venv
+.git/
+.idea/
+__pycache__/
+env/
+venv/
+ENV/
+logs.log
