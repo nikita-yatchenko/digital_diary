@@ -10,6 +10,7 @@ class DiaryEntry(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     text = models.TextField()
+    sentiment_score = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=
                                       datetime.now(pytz.timezone('Europe/Moscow')).strftime('%Y-%m-%d %H:%M:%S'))
     updated_at = models.DateTimeField(auto_now_add=
