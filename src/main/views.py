@@ -3,6 +3,8 @@ from .forms import RegisterForm, EntryForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from .models import DiaryEntry
+from .apps import MainConfig
+import logging
 # Create your views here.
 
 
@@ -10,7 +12,7 @@ from .models import DiaryEntry
 def home(request):
     # TODO: need to add some user info and CHANGE home.html
     # TODO: create a separate page for admins - view everything that users are posting with ban option
-    entries = DiaryEntry.objects.all()
+    entries = DiaryEntry.objects.filter(author=request.user).order_by('-created_at')
 
     if request.method == 'POST':
         entry_id = request.POST.get("entry-id")
@@ -28,11 +30,18 @@ def home(request):
 
 @login_required(login_url="/login")
 def create_entry(request):
+    logger = logging.getLogger('api/create_entry/')
     if request.method == 'POST':
         form = EntryForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
+
+            model = MainConfig.model
+            sentiment_score = model.sentiment_predict(post.text)
+            logger.info(f'user input text: {post.text} Model sentiment: {sentiment_score}')
+
+            post.sentiment_score = sentiment_score
             post.save()
             return redirect("/home")
     else:
