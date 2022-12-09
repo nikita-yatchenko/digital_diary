@@ -12,7 +12,7 @@ import logging
 def home(request):
     # TODO: need to add some user info and CHANGE home.html
     # TODO: create a separate page for admins - view everything that users are posting with ban option
-    entries = DiaryEntry.objects.all().order_by('-created_at')
+    entries = DiaryEntry.objects.filter(author=request.user).order_by('-created_at')
 
     if request.method == 'POST':
         entry_id = request.POST.get("entry-id")
