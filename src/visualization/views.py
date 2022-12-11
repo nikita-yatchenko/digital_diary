@@ -9,10 +9,7 @@ from main.models import DiaryEntry
 
 @login_required(login_url='/login')
 def visualization(request):
-    # notes = Note.objects.filter(user=request.user.id).values() ToDo filter users
-    notes = DiaryEntry.get_dataset()  # ToDO should be replaced with above one
-    print(notes)
-
+    entries = DiaryEntry.objects.filter(author=request.user).values()
     positives = []
     negatives = []
     neutrals = []
@@ -21,18 +18,18 @@ def visualization(request):
     moods = []
     value = []
 
-    for note in notes:
-        if note.sentiment_score >= 0.5:
+    for note in entries:
+        note['created_at'] = note['created_at'].date()
+        if note['sentiment_label'] == 'positive':
             positives.append(note)
-        elif note.sentiment_score <= -0.5:
+        elif note['sentiment_label'] == 'negative':
             negatives.append(note)
         else:
             neutrals.append(note)
 
-        dates.append(note.date)
+        dates.append(note['created_at'])
         value.append(1)
-        moods.append(note.sentiment_score)
-
+        moods.append(note['sentiment_label'])
     fig1 = px.pie(
         values=[len(negatives), len(neutrals), len(positives)],
         names=['Negative', 'Neutral', 'Positive']
@@ -42,7 +39,7 @@ def visualization(request):
             text='<b>Overall Statistics</b>',
             x=0.5,
             font_size=20,
-            font_color='#000'
+            font_color='#212529'
         ),
     )
     fig1.update_traces(
@@ -51,7 +48,6 @@ def visualization(request):
     pie_chart = fig1.to_html()
 
     df = pd.DataFrame([dates, value, moods], index=['date', 'value', 'mood']).T
-
     start = datetime.date.today() - datetime.timedelta(days=datetime.date.today().weekday())
 
     dates1 = []
@@ -59,12 +55,14 @@ def visualization(request):
     moods1 = ['positive'] * 7
     for i in range(7):
         dates1.append(start + datetime.timedelta(days=i))
+        if i == 6:
+            finish = start + datetime.timedelta(days=i)
     df1 = pd.DataFrame([dates1, value1, moods1], index=['date', 'value', 'mood']).T
     df = pd.concat([df, df1], axis=0)
+    df = df[(df['date'] >= start) & (df['date'] <= finish)]
     df = df.groupby(['date', 'mood']).agg({'value': 'sum'}).reset_index()
     df = df.sort_values('date')
-    df['date'] = df['date'].apply(lambda x: x.strftime('%a'))
-    print(df)
+    df['date'] = df['date'].apply(lambda x: x.strftime('%a, %d %b'))
 
     fig2 = px.bar(
         df,
@@ -89,14 +87,14 @@ def visualization(request):
             text='<b>Weekly Statistics</b>',
             x=0.5,
             font_size=20,
-            font_color='#000'
+            font_color='#212529'
         ),
         legend_title=''
     )
     bar_chart = fig2.to_html()
 
     context = {
-        'notes': notes,
+        'notes': entries,
         'positives': positives,
         'negatives': negatives,
         'neutrals': neutrals,

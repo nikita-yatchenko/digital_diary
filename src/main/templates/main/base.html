@@ -10,6 +10,15 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <style>
+        .zoom {
+            transition: transform .07s;
+        }
+
+        .zoom:hover {
+            transform: scale(1.09);
+        }
+    </style>
     <title>{% block title %}My Site{% endblock %}</title>
   </head>
   <body>
@@ -22,6 +31,9 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/create-entry">Create Entry</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/vis">Visualization</a>
             </li>
           </ul>
         </div>

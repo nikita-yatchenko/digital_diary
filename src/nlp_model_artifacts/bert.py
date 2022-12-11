@@ -10,7 +10,7 @@ class SentimentClassifier:
 
         self.max_len = 512
 
-    def sentiment_predict(self, text: str) -> int:
+    def sentiment_predict(self, text: str) -> dict:
         self.model.eval()
 
         _inputs, _masks = self.preprocess(text)
@@ -18,7 +18,12 @@ class SentimentClassifier:
         with torch.no_grad():
             proba = torch.sigmoid(self.model(_inputs, _masks).logits).cpu().numpy()[0]
 
-        return round(proba.dot([-1, 0, 1]), 2)
+        result = {
+            'score': round(proba.dot([-1, 0, 1]), 2),
+            'label': self.model.config.id2label[proba.argmax()]
+        }
+
+        return result
 
     def preprocess(self, text: str) -> tuple:
         encoded_sent = self.tokenizer.encode_plus(
