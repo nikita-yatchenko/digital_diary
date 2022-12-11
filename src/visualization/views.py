@@ -1,17 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.http import HttpResponse
 import datetime
 import plotly.express as px
 import pandas as pd
 
-from .models import Note, Analysis  # ToDo choose correct dir
+from main.models import DiaryEntry
 
 
 @login_required(login_url='/login')
 def visualization(request):
     # notes = Note.objects.filter(user=request.user.id).values() ToDo filter users
-    notes = Note.objects.all()  # ToDO should be replaced with above one
+    notes = DiaryEntry.get_dataset()  # ToDO should be replaced with above one
+    print(notes)
 
     positives = []
     negatives = []
@@ -22,17 +22,16 @@ def visualization(request):
     value = []
 
     for note in notes:
-        mood = Analysis.objects.get(note=note).mood
-        if mood == 'positive':
+        if note.sentiment_score >= 0.5:
             positives.append(note)
-        elif mood == 'negative':
+        elif note.sentiment_score <= -0.5:
             negatives.append(note)
         else:
             neutrals.append(note)
 
         dates.append(note.date)
         value.append(1)
-        moods.append(mood)
+        moods.append(note.sentiment_score)
 
     fig1 = px.pie(
         values=[len(negatives), len(neutrals), len(positives)],
