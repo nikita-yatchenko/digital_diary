@@ -11,6 +11,7 @@ class DiaryEntry(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
     sentiment_score = models.FloatField(default=0)
+    sentiment_label = models.CharField(max_length=20, default='neutral')
     created_at = models.DateTimeField(auto_now_add=
                                       datetime.now(pytz.timezone('Europe/Moscow')).strftime('%Y-%m-%d %H:%M:%S'))
     updated_at = models.DateTimeField(auto_now_add=

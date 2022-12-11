@@ -38,10 +38,15 @@ def create_entry(request):
             post.author = request.user
 
             model = MainConfig.model
-            sentiment_score = model.sentiment_predict(post.text)
+            result = model.sentiment_predict(post.text)
+            sentiment_score = result['score']
+            sentiment_label = result['label']
+
             logger.info(f'user input text: {post.text} Model sentiment: {sentiment_score}')
+            print(f'user input text: {post.text} Model sentiment: {sentiment_score}, {sentiment_label}')
 
             post.sentiment_score = sentiment_score
+            post.sentiment_label = sentiment_label
             post.save()
             return redirect("/home")
     else:
