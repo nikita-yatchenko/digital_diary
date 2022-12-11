@@ -8,7 +8,7 @@ import pandas as pd
 from .models import Note, Analysis  # ToDo choose correct dir
 
 
-# @login_required(login_url=TODO redirect to the correct login)
+@login_required(login_url='/login')
 def visualization(request):
     # notes = Note.objects.filter(user=request.user.id).values() ToDo filter users
     notes = Note.objects.all()  # ToDO should be replaced with above one
@@ -108,7 +108,7 @@ def visualization(request):
     return render(request, 'vis.html', context)
 
 
-# @login_required(login_url=TODO redirect to the correct login)
+@login_required(login_url='/login')
 def notes(request):
     context = {
         'notes': notes,
@@ -120,7 +120,7 @@ def notes(request):
     return render(request, 'notes.html', context)
 
 
-# @login_required(login_url=TODO redirect to the correct login)
+@login_required(login_url='/login')
 def positives(request):
     context = {
         'notes': notes,
@@ -132,7 +132,7 @@ def positives(request):
     return render(request, 'positives.html', context)
 
 
-# @login_required(login_url=TODO redirect to the correct login)
+@login_required(login_url='/login')
 def negatives(request):
     context = {
         'notes': notes,
@@ -144,7 +144,7 @@ def negatives(request):
     return render(request, 'negatives.html', context)
 
 
-# @login_required(login_url=TODO redirect to the correct login)
+@login_required(login_url='/login')
 def neutrals(request):
     context = {
         'notes': notes,
