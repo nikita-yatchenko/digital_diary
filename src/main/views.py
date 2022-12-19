@@ -5,6 +5,11 @@ from django.contrib.auth import login, logout, authenticate
 from .models import DiaryEntry
 from .apps import MainConfig
 import logging
+
+from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.contrib import messages
 # Create your views here.
 
 
@@ -32,8 +37,12 @@ def home(request):
 def create_entry(request):
     logger = logging.getLogger('api/create_entry/')
     if request.method == 'POST':
-        form = EntryForm(request.POST)
+        post_data = request.POST or None
+        file_data = request.FILES or None
+
+        form = EntryForm(post_data, file_data)
         if form.is_valid():
+            
             post = form.save(commit=False)
             post.author = request.user
 
