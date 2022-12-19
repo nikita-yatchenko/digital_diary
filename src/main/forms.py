@@ -15,4 +15,4 @@ class RegisterForm(UserCreationForm):
 class EntryForm(forms.ModelForm):
     class Meta:
         model = DiaryEntry
-        fields = ["title", "text"]
+        fields = ["title", "text", "image"]
